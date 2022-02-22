@@ -39,7 +39,8 @@ Route::post('password/reset', 'Auth\PasswordController@postReset');
 // Route to pdf export
 
 // Registration Routes...
-/*  Route::get('register', 'Auth\AuthController@getRegister');
+/*
+  Route::get('register', 'Auth\AuthController@getRegister');
   Route::post('register', 'Auth\AuthController@postRegister');
 */
 
