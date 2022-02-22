@@ -20,19 +20,24 @@ class QrcodeController extends Controller
 
                 $array = array();
 
-				foreach($columnas as $id){
-					$libro = Libro::findOrFail($id);
+				\Log::debug('catego atribu : '.print_r($columnas,true));
+
+				if (is_array($columnas) || is_object($columnas))
+				{
+					foreach($columnas as $id){
+						$libro = Libro::findOrFail($id);
+						
+						if (($libro->qr_img) == null) { // si el libro aun no tiene QR se lo genera
+							$datos_libro= $libro->id;
+							$codigo = DNS2D::getBarcodePNG($datos_libro, 'QRCODE');	
+							$libro->qr_img = $codigo;
+							$libro->save(); //se genera el qr y se almacena en la BD
 					
-					if (($libro->qr_img) == null) { // si el libro aun no tiene QR se lo genera
-						$datos_libro= $libro->id;
-						$codigo = DNS2D::getBarcodePNG($datos_libro, 'QRCODE');	
-						$libro->qr_img = $codigo;
-        				$libro->save(); //se genera el qr y se almacena en la BD
-				
+						}
+
+						$array[] = $libro; // se van guardando los libros en un array
+
 					}
-
-					$array[] = $libro; // se van guardando los libros en un array
-
 				}
 
 				$view = view('libros.qr',compact('array'));
@@ -76,20 +81,23 @@ class QrcodeController extends Controller
 		
 /*    	dd($request->all();
 */   		
+		if (is_array($request->input('ids')) || is_object($request->input('ids')))
+		{
+			foreach($request->input('ids') as $id){
+				$libro = Libro::findOrFail($id);
+				$array[] = $libro; // se van guardando los libros en un array
 
-		foreach($request->input('ids') as $id){
-			$libro = Libro::findOrFail($id);
-			$array[] = $libro; // se van guardando los libros en un array
-
-		}
+			}
+		
 /*		dd($array);
 */
-		$date = date('Y-m-d');
-		$view =  \View::make('libros.pdf', compact('array', 'date'))->render();
-		$pdf = \App::make('dompdf.wrapper');
-		$pdf->loadHTML($view);
-		$pdf->setPaper('A4', 'portrait');      
-		return $pdf->stream('pdf');
+			$date = date('Y-m-d');
+			$view =  \View::make('libros.pdf', compact('array', 'date'))->render();
+			$pdf = \App::make('dompdf.wrapper');
+			$pdf->loadHTML($view);
+			$pdf->setPaper('A4', 'portrait');      
+			return $pdf->stream('pdf');
+		}
 	}
 
 	public function generar_pdf_repeat(Request $request){
