@@ -1,0 +1,22 @@
+h3 {
+  font-family: Helvetica;
+  font-size: 18px; }
+
+table {
+  display: table;
+  width: 100%; }
+  table th {
+    font-family: Helvetica;
+    font-size: 14px; }
+
+.total {
+  align: center; }
+
+li {
+  list-style: none; }
+
+.exp {
+  font-family: Helvetica;
+  font-size: 12px; }
+
+/*# sourceMappingURL=pdf.css.map */
